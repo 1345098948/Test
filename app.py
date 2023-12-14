@@ -6,10 +6,7 @@ import csv
 app = Flask(__name__)
 
 
-user_info = {
-        'name': 'Yu Wang',
-        'id': '76001'
-    }
+
 def fetch_data(city_name = None, include_header = False, exact_match = False):
     with open("us-cities.csv") as csvfile:
         csvreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -232,34 +229,6 @@ def substitute_words():
 
     return jsonify({"affected_reviews": affected_reviews_count})
 
-@app.route('/words', methods=['GET', 'POST'])
-def words_page():
-    if request.method == 'POST':
-        # Process form data
-        city_name = request.form.get('city')
-        limit = int(request.form.get('limit', 10))
-        substitute_word = request.form.get('substitute_word')
-        word_to_substitute = request.form.get('word_to_substitute')
-
-        # Handle word substitution
-        if word_to_substitute and substitute_word:
-            affected_reviews_count = 0
-
-            for index, row in merged_df.iterrows():
-                review = row['review'].lower()
-                updated_review = review.replace(word_to_substitute, substitute_word)
-
-                if updated_review != review:
-                    merged_df.at[index, 'review'] = updated_review
-                    affected_reviews_count += 1
-
-            return render_template('words.html', result=f"Affected reviews: {affected_reviews_count}")
-
-        # Handle popular words
-        popular_words_result = get_popular_words(city_name, limit)
-        return render_template('words.html', popular_words=popular_words_result)
-
-    return render_template('words.html')
 
 
 if __name__ == '__main__':
